@@ -21,10 +21,10 @@ onMounted(() => {
         <template v-if="userStore.userInfo">
 
           <li class="avatar">
-            <img
-              :src="userStore.userInfo.avatar ? userStore.userInfo.avatar : defaultAvatar"
-              alt=""
-            />
+          <img
+            :src="userStore.userInfo?.avatar === '/default-avatar.png' ? defaultAvatar
+                : userStore.userInfo?.avatar"
+          />
           </li>
 
           <li>
@@ -44,7 +44,7 @@ onMounted(() => {
           </li>
 
           <li>
-            <a href="" @click.prevent="$router.push('/register')">注册</a>
+            <a href="" @click.prevent="$router.push('/register')">去注册</a>
           </li>
 
         </template>

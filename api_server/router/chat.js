@@ -7,6 +7,7 @@ import { createSession } from '../router_handle/chat.js'
 import { getSessionList } from '../router_handle/chat.js'
 import { getMessage } from '../router_handle/chat.js'
 import { senderMessageHandler } from '../router_handle/chat.js'
+import { deleteSession } from '../router_handle/chat.js'
 
 // 导入joy校验规则
 import { createSession_schema, getMessage_schema } from '../schema/chat.js'
@@ -22,3 +23,6 @@ Router.get('/getMessage', expressJoi(getMessage_schema), getMessage)
 
 // 发送消息路由
 Router.post('/sendMessage', expressJoi(createSession_schema), senderMessageHandler)
+
+// 删除会话路由
+Router.delete('/deleteSession/:session_id', deleteSession)

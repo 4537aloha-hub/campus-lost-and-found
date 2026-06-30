@@ -1,44 +1,19 @@
 import { defineStore } from "pinia";
-import { ref, onMounted } from "vue";
-import { useRouter } from "vue-router";
-// 导入获取用户物品信息的api
-import { getItemByUserId } from '@/api/user'
+import { ref } from "vue";
 import { getUserInfo } from '@/api/user'
-// 导入路由
-import router from '@/router'
+import router from '@/router/fronted'
 
 export const useUserStore = defineStore("user", () => {
   const token = ref('')
   const userInfo = ref(null)
+  const updateEmailStep = ref(0) // 0: 未开始, 1: 旧邮箱验证通过, 2: 新邮箱输入完成
 
   // 获取用户信息
   const FetUserInfo = async () => {
-  // 页面加载时获取用户信息
-  const res = await getUserInfo();
-  console.log('用户信息获取成功', res);
-  // 存储用户信息（只存储data部分）
-  userInfo.value = res.data
-}
-
-
-  //区分物品数据(发布的物品招领数据/丢失物物品数据)
- const itemFound = ref([])
- const itemLost = ref([])
-
-  // 获取用户我发布的物品数据
-  const getItemList = async () => {
-    const res = await getItemByUserId({type: 'found'})
-    console.log('获取我发布的物品数据成功', res);
-    itemFound.value = res.data
+    const res = await getUserInfo();
+    console.log('用户信息获取成功', res);
+    userInfo.value = res.data
   }
-
-  // 获取用户我丢失的物品数据
-  const getLostItemList = async () => {
-    const res = await getItemByUserId({type: 'lost'})
-    console.log('获取我丢失的物品数据成功', res);
-    itemLost.value = res.data
-  }
-
 
   const setToken = (tokenValue) => {
     token.value = tokenValue
@@ -46,38 +21,42 @@ export const useUserStore = defineStore("user", () => {
 
   // 保存用户信息
   const UserInfo = (data) => {
-    // 这里的data代表的是用户信息中data的对象
     userInfo.value = data
   }
 
-  // 清除用户信息 / 退出登录 / 清除本地token信息
+  // 退出登录
   const loginOut = () => {
-    // 清空token的值
     token.value = ''
-    // 清空用户信息
     userInfo.value = null
-    // 跳转登录页
+    updateEmailStep.value = 0 // 退出清空换邮箱状态
     router.push('/login')
   }
 
-  // 导出方法和函数
+  // 设置邮箱验证步骤
+  const setUpdateEmailStep = (step) => {
+    updateEmailStep.value = step
+  }
+
+  // 重置邮箱验证步骤
+  const resetUpdateEmailStep = () => {
+    updateEmailStep.value = 0
+  }
+
   return {
     token,
     userInfo,
-    itemFound,
-    itemLost,
+    updateEmailStep,
     setToken,
     UserInfo,
     loginOut,
     FetUserInfo,
-    getItemList,
-    getLostItemList
+    setUpdateEmailStep,
+    resetUpdateEmailStep,
   }
 },
-// 本地持久化
 {
   persist: {
     key: 'user',
-    paths: ['token', 'userInfo']
+    paths: ['token', 'userInfo'] // updateEmailStep不持久化，刷新页面重置流程
   }
 });

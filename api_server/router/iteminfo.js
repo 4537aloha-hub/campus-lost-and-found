@@ -7,7 +7,7 @@ const Router = express.Router();
 // 导入物品路由处理函数模块
 import { getItemListHandler } from '../router_handle/iteminfo.js'
 import { getItemInfoByIdHandler } from '../router_handle/iteminfo.js'
-import { getItemCategoryInfoHandler } from '../router_handle/iteminfo.js'
+import { getLostItemCategoryInfoHandler, getPublishItemCategoryInfoHandler } from '../router_handle/iteminfo.js'
 import { searchItemHandler } from '../router_handle/iteminfo.js'
 
 // 导入验证规则对象
@@ -20,7 +20,14 @@ Router.get('/getItemList', getItemListHandler)
 Router.get('/getItemInfoById/:id', getItemInfoByIdHandler)
 
 // 根据物品分类树获取物品列表路由
-Router.get('/getItemsByCategoryId', getItemCategoryInfoHandler)
+
+// 获取丢失物品分类树列表路由
+Router.get('/getLostItemsByCategoryId', getLostItemCategoryInfoHandler)
+
+// 获取物品招领分类树列表路由
+Router.get('/getPublishItemsByCategoryId', getPublishItemCategoryInfoHandler)
+
+
 
 // 搜索物品的路由
 Router.get('/searchItem', expressJoi(searchItem_schema), searchItemHandler)

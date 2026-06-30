@@ -6,14 +6,12 @@ import bcrypt from 'bcryptjs';
 // 获取用户信息的处理函数
 export const getUserInfoHandler = async (req, res) => {
 
-    console.log('进入接口了');
-
     if (!req.auth || !req.auth.id) {
         return res.cc('身份验证失败，未获取到用户 ID！');
     }
 
     const sql = `
-        select id, student_id, username, phone, email,avatar, college, major, grade 
+        select id, student_id, username, phone, email,avatar, college, major, role, grade 
         from users 
         where id = ?
     `

@@ -18,6 +18,7 @@ const email = joi.string().email()
 const college = joi.string().max(50)
 const major = joi.string().max(50)
 const grade = joi.string().max(20)
+const code = joi.string().length(6).required()
 
 export const reg_schema = {
     body: {
@@ -26,6 +27,7 @@ export const reg_schema = {
         password,
         phone,
         email,
+        code,
         college,
         major,
         grade
@@ -68,5 +70,36 @@ export const updatePassword_schema = {
         newPwd: joi.not(joi.ref('oldPwd')).concat(password),
         // 确认两次输入的新密码是否一致
         confirmPwd: joi.valid(joi.ref('newPwd')).required()
+    }
+}
+
+export const forget_check_student_schema = {
+    body: {
+        student_id
+    }
+}
+
+export const forget_verify_email_schema = {
+    body: {
+        student_id,
+        email
+    }
+}
+
+export const forget_verify_code_schema = {
+    body: {
+        student_id,
+        email,
+        code
+    }
+}
+
+export const forget_reset_password_schema = {
+    body: {
+        student_id,
+        email,
+        code,
+        password,
+        confirmPassword: joi.valid(joi.ref('password')).required()
     }
 }

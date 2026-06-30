@@ -2,7 +2,7 @@ import request from "@/utils/request";
 import { typeMap, statusMap } from '@/contants/itemMap'
 
 // 获取轮播图数据
-export const getBanners = () => request.get('/api/banner', { baseURL: ''});
+export const getBanners = () => request.get('/banner/list');
 
 // 获取物品数据 （失物招领和物品遗失）并进行数据清洗
 export const getItems = async () => {
@@ -29,7 +29,15 @@ export const getItemDetail = async (id) => {
 }
 
 // 根据物品分类树获取物品信息
-export const getItemsByCategoryId = (params) => request.get('/item/getItemsByCategoryId', {params})
+
+// 1.获取丢失物品分类树列表
+export const getLostItemsByCategoryId = (params) => request.get('/item/getLostItemsByCategoryId', {params})
+
+// 2.获取物品招领分类树列表
+export const getPublishItemsByCategoryId = (params) => request.get('/item/getPublishItemsByCategoryId', {params})
 
 // 根据物品名称模糊查询物品信息
 export const getItemsByName = (params) => request.get('/item/searchItem', {params})
+
+// 获取公告列表
+export const getNoticeList = () => request.get('/notice/noticeList')

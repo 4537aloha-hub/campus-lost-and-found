@@ -10,7 +10,7 @@
         <li><RouterLink to="/" >首页</RouterLink></li>
         <li><RouterLink to="/lost" >失物中心</RouterLink></li>
         <li><RouterLink to="/publish" >失物招领</RouterLink></li>
-        <li><RouterLink to="/userlayoutcontainer" >我的</RouterLink></li>
+        <li><RouterLink to="/user/profile" >我的</RouterLink></li>
       </ul>
     </div>
   </header>

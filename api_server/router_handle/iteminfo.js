@@ -1,15 +1,17 @@
 import db from '../db/index.js';
 
 // 获取物品列表的处理函数
-export const getItemListHandler = async (req, res) => { 
-    try { 
+export const getItemListHandler = async (req, res) => {
+    try {
         // 获取物品列表
-        const [results] = await db.query(`select * from items`)
-        res.send({
-            status: 200,
-            message: '获取物品列表成功',
-            data: results
-        })
+        const [results] = await db.query(`select * from items where is_deleted = 0 and audit_status = 1 order by id desc`)
+
+        // 返回物品列表
+            res.send({
+                status: 200,
+                message: '获取物品列表成功',
+                data: results
+            })
     }
     catch (err) {
         res.cc(err);
@@ -39,37 +41,109 @@ export const getItemInfoByIdHandler = async(req,res) => {
 
 
 // 根据物品分类树获取物品列表路由处理函数
-export const getItemCategoryInfoHandler = async (req, res) => {
-    try{
-        // 从查询参数中获取分类ID和子分类ID
-        const { categoryId, subCategoryId } = req.query;
 
-        // 构建SQL查询语句
-        let sql = `select * from items where is_deleted = 0`
-        // 构建查询参数数组
-        const params = [];
+// 获取丢失物品分类树列表路由处理函数
+export const getLostItemCategoryInfoHandler = async (req, res) => {
+  try {
+    const {
+      categoryId,
+      subCategoryId,
+      pageNum = 1,
+      pageSize = 5
+    } = req.query
 
-        // 构建分类ID条件 如果一级分类id存在 则添加一级分类id条件到sql语句中
-        if(categoryId) {
-            sql += ' and category_id = ?'
-            params.push(categoryId)   
-        }
-        // 构建子分类ID条件 如果二级分类id存在 则添加二级分类id条件到sql语句中
-        if(subCategoryId) {
-            sql += 'and sub_category_id = ?'
-            params.push(subCategoryId)
-        }
+    const offset = (Number(pageNum) - 1) * Number(pageSize)
 
-        const [results] = await db.query(sql, params);
+    // 基础条件：只查未删除 + lost
+    let where = `WHERE is_deleted = 0 AND type = 'lost'`
+    const params = []
 
-        res.send({
-            status: 0,
-            message: '获取物品列表成功',
-            data: results
-        })
-    }catch(err){
-        res.cc(err)
+    if (categoryId) {
+      where += ' AND category_id = ?'
+      params.push(categoryId)
     }
+
+    if (subCategoryId) {
+      where += ' AND sub_category_id = ?'
+      params.push(subCategoryId)
+    }
+
+    // 总数
+    const [[{ total }]] = await db.query(
+      `SELECT COUNT(*) AS total FROM items ${where}`,
+      params
+    )
+
+    // 分页数据
+    const [list] = await db.query(
+      `SELECT * FROM items ${where} ORDER BY id DESC LIMIT ?, ?`,
+      [...params, offset, Number(pageSize)]
+    )
+
+    res.send({
+      status: 0,
+      message: '获取 lost 物品列表成功',
+      data: {
+        list,
+        total
+      }
+    })
+
+  } catch (err) {
+    res.cc(err)
+  }
+}
+
+// 获取物品招领分类树列表路由处理函数
+export const getPublishItemCategoryInfoHandler = async (req, res) => {
+  try {
+    const {
+      categoryId,
+      subCategoryId,
+      pageNum = 1,
+      pageSize = 5
+    } = req.query
+
+    const offset = (Number(pageNum) - 1) * Number(pageSize)
+
+    // 基础条件：只查未删除 + found
+    let where = `WHERE is_deleted = 0 AND type = 'found'`
+    const params = []
+
+    if (categoryId) {
+      where += ' AND category_id = ?'
+      params.push(categoryId)
+    }
+
+    if (subCategoryId) {
+      where += ' AND sub_category_id = ?'
+      params.push(subCategoryId)
+    }
+
+    // 总数
+    const [[{ total }]] = await db.query(
+      `SELECT COUNT(*) AS total FROM items ${where}`,
+      params
+    )
+
+    // 分页数据
+    const [list] = await db.query(
+      `SELECT * FROM items ${where} ORDER BY id DESC LIMIT ?, ?`,
+      [...params, offset, Number(pageSize)]
+    )
+
+    res.send({
+      status: 0,
+      message: '获取 lost 物品列表成功',
+      data: {
+        list,
+        total
+      }
+    })
+
+  } catch (err) {
+    res.cc(err)
+  }
 }
 
 // 全局搜索物品名称路由处理函数
@@ -77,9 +151,12 @@ export const searchItemHandler = async (req, res) => {
 
      // 从请求体中获取物品名称
     const itemName = req.query.title;
-    
-    if(!itemName)
-        return res.cc('该物品不存在')
+
+    if(!itemName || itemName.trim() === '')
+        return res.cc('请输入搜索内容')
+
+    if(/\s/.test(itemName))
+        return res.cc('搜索内容不能包含空白字符')
 
     // [`%${itemName}%`] 表示模糊查询 物品名称中包含itemName的物品
     const [results] = await db.query(`select * from items where title like ? and is_deleted = 0`, [`%${itemName}%`])

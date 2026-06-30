@@ -10,7 +10,10 @@ import expressJoi from '@escook/express-joi';
 // 发布物物品遗失/招领的路由 
 import { publishItemHandler } from '../router_handle/item.js'
 // 根据用户ID查询用户发布的物品列表的路由处理函数
-import { getItemListByUserIdHandler } from '../router_handle/item.js'
+// 1.查询lost物品列表
+import { getItemListByUserIdLostHandler } from '../router_handle/item.js'
+// 2.查询found物品列表
+import { getItemListByUserIdFoundHandler } from '../router_handle/item.js'
 // 删除物品的路由
 import { deleteItemHandler } from '../router_handle/item.js'
 // 编辑/更新物品信息的路由
@@ -26,7 +29,12 @@ Router.post('/publishItem', expressJoi(publishItem_schema), publishItemHandler)
 Router.delete('/deleteItem/:id', deleteItemHandler)
 
 // 根据用户ID获取物品列表的路由
-Router.get('/getItemListByUserId', getItemListByUserIdHandler)
+
+// 1. 查询lost物品列表
+Router.get('/getItemListByUserIdLost', getItemListByUserIdLostHandler)
+
+// 2.查询found物品列表
+Router.get('/getItemListByUserIdFound', getItemListByUserIdFoundHandler)
 
 // 编辑/更新物品信息的路由
 Router.put('/editItem/:id', expressJoi(editItem_schema), editItemHandler)

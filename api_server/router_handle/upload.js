@@ -27,8 +27,19 @@ const avatarStorage = multer.diskStorage({
   }
 )
 
+// 轮播图图片存储
+const bannerStorage = multer.diskStorage({
+  // 存放目录
+  destination: function (req, file, cb) {
+    cb(null, './uploads/banners')
+    },
+  filename: filenameHandler
+  }
+)
+
 const itemUpload = multer({ storage: itemStorage })
 const avatarUpload = multer({ storage: avatarStorage })
+const bannerUpload = multer({ storage: bannerStorage })
 
 // 上传物品图片的处理函数
 export const uploadImage = [
@@ -52,6 +63,22 @@ export const uploadAvatar = [
   (req,res)=>{
 
     const url = `http://localhost:3000/uploads/avatars/${req.file.filename}`
+
+    res.send({
+      status:0,
+      message:'上传成功',
+      url
+    })
+
+  }
+]
+
+// 上传轮播图图片的处理函数
+export const uploadBannerImage = [
+  bannerUpload.single('file'),
+  (req,res)=>{
+
+    const url = `http://localhost:3000/uploads/banners/${req.file.filename}`
 
     res.send({
       status:0,

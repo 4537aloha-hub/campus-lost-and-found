@@ -24,7 +24,7 @@ export const publishItemHandler = async (req, res) => {
             sub_category_id,
             location,
             contact,
-            type
+            type,
         } = req.body;
 
         // 验证物品信息是否完整步骤 已经在schemama中完成定义，路由处理函数这里无需再次定义
@@ -51,7 +51,7 @@ export const publishItemHandler = async (req, res) => {
             sub_category_id ?? null, 
             location ?? null, 
             contact ?? null, 
-            type
+            type,
         ]
     )
         // 4. 检查物品ID是否存在
@@ -70,12 +70,38 @@ export const publishItemHandler = async (req, res) => {
                 status: 1,
                 message: '发布物品失败'
             });
+        
+        // 插入活动记录
+        try {
+            await db.query(
+                `insert into activities
+                (
+                    user_id,
+                    action_type,
+                    target_id,
+                    target_type,
+                    content
+                )
+                values (?, ?, ?, ?, ?)`,
+                [
+                    userId,
+                    'publish_item',
+                    itemId,
+                    'item',
+                    `发布了物品：${title}`
+                ]
+            )
+        } catch(err) {
+            console.error('活动记录写入失败：', err)
+        }
+
         // 3. 发布物品成功
         res.send({
 
             status: 0,
-            message: '发布物品成功'
+            message: '发布物品成功,物品待审核'
         });
+
     }catch (error) {
             return res.cc(error);
     }
@@ -158,31 +184,83 @@ export const editItemHandler = async (req, res) => {
 }
 
 // 根据用户ID查询物品列表的处理函数
-export const getItemListByUserIdHandler = async (req,res) => {
-    try{
-        // 当前登录用户的ID
-        const userId = req.auth.id;
 
-        // 查询参数
-        const { type } = req.query;
+// 1.根据userId查询lost类型的物品列表
+export const getItemListByUserIdLostHandler = async (req, res) => {
+  try {
+    // 当前登录用户ID
+    const userId = req.auth.id;
 
-        // 只查询未删除的物品
-        let sql = `select * from items where user_id = ? and is_deleted = 0`
-        const params = [userId]
-    
-        if(type){
-            sql += ` and type = ?`
-            params.push(type)
-        }
+    // 分页参数
+    const { pageNum = 1, pageSize = 10 } = req.query;
+    const offset = (Number(pageNum) - 1) * Number(pageSize);
 
-        const  [results] = await db.query(sql, params)
-        // 返回物品列表
-        res.send({
-            status: 0,
-            message: '获取物品列表成功',
-            data: results
-        })
-    }catch(err){
-        res.cc(err);
-    }
+    // 基础条件：自己的 + 未删除 + 类型为 lost
+    let where = `WHERE user_id = ? AND is_deleted = 0 AND type = 'lost'`;
+    const params = [userId];
+
+    // 查询总数
+    const [[{ total }]] = await db.query(
+      `SELECT COUNT(*) AS total FROM items ${where}`,
+      params
+    );
+
+    // 查询分页列表
+    const [list] = await db.query(
+      `SELECT * FROM items ${where} ORDER BY id DESC LIMIT ?, ?`,
+      [...params, offset, Number(pageSize)]
+    );
+
+    res.send({
+      status: 0,
+      message: '获取个人 lost 物品列表成功',
+      data: {
+        list,
+        total
+      }
+    });
+
+  } catch (err) {
+    res.cc(err);
+  }
+};
+
+// 2.根据userId查询found类型的物品列表
+export const getItemListByUserIdFoundHandler = async (req, res) => {
+      try {
+    // 当前登录用户ID
+    const userId = req.auth.id;
+
+    // 分页参数
+    const { pageNum = 1, pageSize = 10 } = req.query;
+    const offset = (Number(pageNum) - 1) * Number(pageSize);
+
+    // 基础条件：自己的 + 未删除 + 类型为 found
+    let where = `WHERE user_id = ? AND is_deleted = 0 AND type = 'found'`;
+    const params = [userId];
+
+    // 查询总数
+    const [[{ total }]] = await db.query(
+      `SELECT COUNT(*) AS total FROM items ${where}`,
+      params
+    );
+
+    // 查询分页列表
+    const [list] = await db.query(
+      `SELECT * FROM items ${where} ORDER BY id DESC LIMIT ?, ?`,
+      [...params, offset, Number(pageSize)]
+    );
+
+    res.send({
+      status: 0,
+      message: '获取个人 found 物品列表成功',
+      data: {
+        list,
+        total
+      }
+    });
+
+  } catch (err) {
+    res.cc(err);
+  }
 }

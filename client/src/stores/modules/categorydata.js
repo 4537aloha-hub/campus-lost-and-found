@@ -2,7 +2,7 @@ import {defineStore} from 'pinia'
 import { ref, onMounted } from 'vue'
 import { useRoute } from 'vue-router';
 import { getCategoryTree } from '@/api/category'
-import { getItemsByCategoryId } from '@/api/home'
+import { getLostItemsByCategoryId } from '@/api/home'
 
 export const useCategoryStore = defineStore('category', () => {
   const route = useRoute()
@@ -17,6 +17,12 @@ export const useCategoryStore = defineStore('category', () => {
   // 3.根据type区分物品数据
   const publishItems = ref([])
   const lostItems = ref([])
+
+  // 5.添加静态锁 防止重复请求
+  let currentRequestId = 0
+
+  // 是否已搜索或分类选择
+  const hasSearched = ref(false)
 
   // 获取物品分类树
   const getCategories = async () => {
@@ -40,27 +46,47 @@ export const useCategoryStore = defineStore('category', () => {
 
   // 获取物品数据
   const getItems = async () => {
+
+    const requestId = ++currentRequestId
+
+
     const params = {
       categoryId: activeCategoryId.value,
       subCategoryId: activeSubCategoryId.value,
     }
-    const res = await getItemsByCategoryId(params)
-    console.log('获取物品数据成功', res);
-    items.value = res.data
-    filterItemsByType()
+
+      const res = await getLostItemsByCategoryId(params)
+      // 如果不是最新请求 直接丢弃
+      if(requestId !== currentRequestId) return
+      console.log('获取物品数据成功', res);
+      items.value = res.data
+      filterItemsByType()
+      hasSearched.value = true
+
   }
 
   // 选择一级分类功能
   const selectCategory = async (category) => {
     activeCategoryId.value = category ? category.id : null
+    activeSubCategoryId.value = null // 重置二级分类为全部
     subCategories.value = category ? category.children : []
-    getItems()
+    hasSearched.value = true
+    await getItems()
   }
 
   // 选择二级分类功能
-  const selectSubCategoty = (subCategory) => {
+  const selectSubCategoty = async (subCategory) => {
     activeSubCategoryId.value = subCategory ? subCategory.id : null
-    getItems()
+    hasSearched.value = true
+    await getItems()
+  }
+
+  // 重置分类选中状态
+  const resetCategory = () => {
+    activeCategoryId.value = null
+    activeSubCategoryId.value = null
+    subCategories.value = []
+    hasSearched.value = false
   }
 
   return {
@@ -70,9 +96,11 @@ export const useCategoryStore = defineStore('category', () => {
     activeSubCategoryId,
     publishItems,
     lostItems,
+    hasSearched,
     selectCategory,
     selectSubCategoty,
     getItems,
     getCategories,
+    resetCategory,
   }
 })
