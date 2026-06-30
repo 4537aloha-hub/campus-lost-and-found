@@ -45,6 +45,7 @@
 
 ## 📁 项目结构
 
+```text
 campus-lost-and-found/
 ├── api_server/                 # 后端服务
 │   ├── app.js                 # 应用入口
@@ -67,7 +68,6 @@ campus-lost-and-found/
 ├── uploads/                   # 文件上传目录
 ├── package.json
 └── README.md
-
 
 ## 🚀 快速开始
 
