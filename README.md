@@ -44,37 +44,30 @@
 - **JWT** - 身份认证
 
 ## 📁 项目结构
- ├── client/ # 前端代码
- │ ├── src/ 
- │ │ ├── Views/ # 页面视图 
- │ │ │ ├── admin/ # 管理员后台 
- │ │ │ │ ├── banner/ # 轮播图管理 
- │ │ │ │ ├── category/ # 分类管理 
- │ │ │ │ ├── claim/ # 认领审核 
- │ │ │ │ ├── dashboard/ # 数据看板 
- │ │ │ │ ├── item/ # 物品管理 
- │ │ │ │ ├── notice/ # 公告管理 
- │ │ │ │ └── user/ # 用户管理 
- │ │ │ ├── auth/ # 认证页面 
- │ │ │ ├── components/ # 公共组件 
- │ │ │ ├── frontend/ # 用户前端 
- │ │ │ │ ├── detail/ # 物品详情 
- │ │ │ │ ├── home/ # 首页 
- │ │ │ │ ├── lost/ # 失物列表 
- │ │ │ │ ├── publish/ # 发布页面 
- │ │ │ │ └── user/ # 用户中心 
- │ │ │ └── layout/ # 布局组件 
- │ │ ├── api/ # API 接口 
- │ │ ├── router/ # 路由配置 
- │ │ ├── stores/ # 状态管理 
- │ │ └── utils/ # 工具函数 
- ├── api_server/ # 后端代码 
- │ ├── db/ # 数据库配置 
- │ ├── middlewares/ # 中间件 
- │ ├── router/ # 路由定义 
- │ ├── router_handle/ # 路由处理 
- │ ├── app.js # 应用入口 
- │ └── config.js # 配置文件
+
+campus-lost-and-found/
+├── api_server/                 # 后端服务
+│   ├── app.js                 # 应用入口
+│   ├── config.js              # 配置文件
+│   ├── db/                    # 数据库连接
+│   ├── router/                # 路由定义
+│   └── router_handle/         # 路由处理器
+├── client/                    # 前端项目
+│   ├── src/
+│   │   ├── Views/             # 页面组件
+│   │   │   ├── admin/         # 管理后台
+│   │   │   ├── auth/          # 认证页面
+│   │   │   ├── components/    # 公共组件
+│   │   │   ├── frontend/      # 前端页面
+│   │   │   └── layout/        # 布局组件
+│   │   ├── api/               # API 接口
+│   │   ├── stores/            # 状态管理
+│   │   └── utils/             # 工具函数
+│   └── package.json
+├── uploads/                   # 文件上传目录
+├── package.json
+└── README.md
+
 
 ## 🚀 快速开始
 
