@@ -68,6 +68,7 @@ campus-lost-and-found/
 ├── uploads/                   # 文件上传目录
 ├── package.json
 └── README.md
+```
 
 ## 🚀 快速开始
 
