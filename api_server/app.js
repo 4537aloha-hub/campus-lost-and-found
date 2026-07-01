@@ -8,7 +8,8 @@ import joi from 'joi'
 import { expressjwt } from 'express-jwt';
 // 导入全局配置文件
 import config from './config.js';
-
+// 导入文件系统模块
+import fs from 'fs';
 
 // 全局注册中间件
 const app = express()
