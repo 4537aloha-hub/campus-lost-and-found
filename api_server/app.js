@@ -10,6 +10,8 @@ import { expressjwt } from 'express-jwt';
 import config from './config.js';
 // 导入文件系统模块
 import fs from 'fs';
+// 导入https模块
+import https from 'https';
 
 // 全局注册中间件
 const app = express()
