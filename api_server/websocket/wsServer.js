@@ -1,8 +1,24 @@
 import { WebSocketServer } from 'ws';
 
-// 创建WebSocket服务器 端口3001
-const wss = new WebSocketServer({ port: 3001 });
-console.log('WebSocket服务器已启动端口为3001');
+// // 创建WebSocket服务器 端口3001
+// const wss = new WebSocketServer({ port: 3001 });
+// console.log('WebSocket服务器已启动端口为3001');
+
+const options = {
+    key: fs.readFileSync("/etc/letsencrypt/live/naruseshiroha.top/privkey.pem"),
+    cert: fs.readFileSync("/etc/letsencrypt/live/naruseshiroha.top/fullchain.pem"),
+};
+
+const wsServer = https.createServer(options);
+
+const wss = new WebSocketServer({
+    server: wsServer
+});
+
+wsServer.listen(3001, () => {
+    console.log("WSS启动");
+});
+
 
 // 保存在线用户 一个对象
 const onlineUsers = {};

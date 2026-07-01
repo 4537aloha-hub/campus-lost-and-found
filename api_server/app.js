@@ -113,7 +113,16 @@ app.use(function (err, req, res, next) {
     res.cc(err)
 });
 
-// 创建服务器
-app.listen(3000, () => {
-  console.log('服务器已启动,请访问：http://localhost:3000');
-})
+// // 创建服务器
+// app.listen(3000, () => {
+//   console.log('服务器已启动,请访问：http://localhost:3000');
+// })
+
+const options = {
+    key: fs.readFileSync("/etc/letsencrypt/live/naruseshiroha.top/privkey.pem"),
+    cert: fs.readFileSync("/etc/letsencrypt/live/naruseshiroha.top/fullchain.pem"),
+};
+
+https.createServer(options, app).listen(3000, () => {
+    console.log("HTTPS服务器启动");
+});

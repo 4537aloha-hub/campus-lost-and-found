@@ -12,7 +12,7 @@ export const connectSocket = (userInfo) => {
   if(ws) {
     ws.close();
   }
-  ws = new WebSocket('ws://localhost:3001')
+  ws = new WebSocket('wss://localhost:3001')
 
   ws.onopen = () => {
     console.log('Websocket连接成功');
