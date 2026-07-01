@@ -1,4 +1,5 @@
 import { WebSocketServer } from 'ws';
+import fs from 'fs';
 
 // // 创建WebSocket服务器 端口3001
 // const wss = new WebSocketServer({ port: 3001 });
