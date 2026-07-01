@@ -11,11 +11,58 @@
  Target Server Version : 80045 (8.0.45)
  File Encoding         : 65001
 
- Date: 16/03/2026 21:40:43
+ Date: 01/07/2026 19:52:23
 */
 
 SET NAMES utf8mb4;
 SET FOREIGN_KEY_CHECKS = 0;
+
+-- ----------------------------
+-- Table structure for activities
+-- ----------------------------
+DROP TABLE IF EXISTS `activities`;
+CREATE TABLE `activities`  (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `user_id` int NOT NULL,
+  `action_type` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
+  `target_id` int NULL DEFAULT NULL,
+  `target_type` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL DEFAULT NULL,
+  `content` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL DEFAULT NULL,
+  `created_at` datetime NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`) USING BTREE
+) ENGINE = InnoDB AUTO_INCREMENT = 2 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci ROW_FORMAT = Dynamic;
+
+-- ----------------------------
+-- Table structure for announcements
+-- ----------------------------
+DROP TABLE IF EXISTS `announcements`;
+CREATE TABLE `announcements`  (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `title` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL COMMENT '公告标题',
+  `content` text CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL COMMENT '公告内容',
+  `status` tinyint NULL DEFAULT 1 COMMENT '1显示 0隐藏',
+  `is_top` tinyint NULL DEFAULT 0 COMMENT '1置顶 0普通',
+  `create_time` datetime NULL DEFAULT CURRENT_TIMESTAMP,
+  `update_time` datetime NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `priority` tinyint NULL DEFAULT 1 COMMENT '1普通 2重要 3紧急',
+  PRIMARY KEY (`id`) USING BTREE
+) ENGINE = InnoDB AUTO_INCREMENT = 4 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci ROW_FORMAT = Dynamic;
+
+-- ----------------------------
+-- Table structure for banners
+-- ----------------------------
+DROP TABLE IF EXISTS `banners`;
+CREATE TABLE `banners`  (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `title` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL DEFAULT NULL COMMENT '轮播图标题',
+  `image_url` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL COMMENT '图片地址',
+  `link_url` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL DEFAULT NULL COMMENT '点击跳转',
+  `sort` int NULL DEFAULT 0 COMMENT '排序',
+  `status` tinyint NULL DEFAULT 1 COMMENT '1显示 0隐藏',
+  `created_at` datetime NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` datetime NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`) USING BTREE
+) ENGINE = InnoDB AUTO_INCREMENT = 10 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Table structure for categories
@@ -26,13 +73,7 @@ CREATE TABLE `categories`  (
   `name` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
   `sort` int NULL DEFAULT 0,
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 3 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci ROW_FORMAT = Dynamic;
-
--- ----------------------------
--- Records of categories
--- ----------------------------
-INSERT INTO `categories` VALUES (1, '数码产品', 0);
-INSERT INTO `categories` VALUES (2, '衣物', 0);
+) ENGINE = InnoDB AUTO_INCREMENT = 6 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Table structure for chat_messages
@@ -50,11 +91,7 @@ CREATE TABLE `chat_messages`  (
   INDEX `idx_session_id`(`session_id` ASC) USING BTREE,
   CONSTRAINT `fk_chat_msg_sender` FOREIGN KEY (`sender_id`) REFERENCES `users` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT,
   CONSTRAINT `fk_chat_msg_session` FOREIGN KEY (`session_id`) REFERENCES `chat_sessions` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT
-) ENGINE = InnoDB AUTO_INCREMENT = 36 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci ROW_FORMAT = Dynamic;
-
--- ----------------------------
--- Records of chat_messages
--- ----------------------------
+) ENGINE = InnoDB AUTO_INCREMENT = 41 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Table structure for chat_sessions
@@ -66,16 +103,42 @@ CREATE TABLE `chat_sessions`  (
   `user1_id` int NOT NULL COMMENT '发起聊天的用户',
   `user2_id` int NOT NULL COMMENT '物品发布者',
   `created_at` datetime NULL DEFAULT CURRENT_TIMESTAMP COMMENT '会话创建的时间',
+  `deleted_by_user1` tinyint NULL DEFAULT 0,
+  `deleted_by_user2` tinyint NULL DEFAULT 0,
   PRIMARY KEY (`id`) USING BTREE,
-  UNIQUE INDEX `unique_session`(`item_id` ASC, `user1_id` ASC, `user2_id` ASC) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 4 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci ROW_FORMAT = Dynamic;
+  UNIQUE INDEX `unique_session`(`item_id` ASC, `user1_id` ASC, `user2_id` ASC) USING BTREE,
+  INDEX `idx_user1`(`user1_id` ASC) USING BTREE
+) ENGINE = InnoDB AUTO_INCREMENT = 7 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci ROW_FORMAT = Dynamic;
 
 -- ----------------------------
--- Records of chat_sessions
+-- Table structure for claims
 -- ----------------------------
-INSERT INTO `chat_sessions` VALUES (1, 1, 1, 2, '2026-03-13 15:08:05');
-INSERT INTO `chat_sessions` VALUES (2, 9, 1, 2, '2026-03-13 15:32:24');
-INSERT INTO `chat_sessions` VALUES (3, 7, 1, 1, '2026-03-13 15:33:02');
+DROP TABLE IF EXISTS `claims`;
+CREATE TABLE `claims`  (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `item_id` int NOT NULL,
+  `applicant_id` int NOT NULL COMMENT '发起认领的人',
+  `receiver_id` int NOT NULL COMMENT '接收认领的人',
+  `status` enum('pending','approved','rejected','cancelled') CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL DEFAULT 'pending',
+  `created_at` datetime NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` datetime NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`) USING BTREE
+) ENGINE = InnoDB AUTO_INCREMENT = 6 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci ROW_FORMAT = Dynamic;
+
+-- ----------------------------
+-- Table structure for email_codes
+-- ----------------------------
+DROP TABLE IF EXISTS `email_codes`;
+CREATE TABLE `email_codes`  (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `email` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL DEFAULT NULL,
+  `code` varchar(6) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL DEFAULT NULL,
+  `type` enum('bind','verify','register','forget') CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
+  `expire_time` datetime NULL DEFAULT NULL,
+  `is_used` tinyint NULL DEFAULT 0,
+  `created_at` datetime NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`) USING BTREE
+) ENGINE = InnoDB AUTO_INCREMENT = 50 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Table structure for item_images
@@ -91,12 +154,6 @@ CREATE TABLE `item_images`  (
   INDEX `item_id`(`item_id` ASC) USING BTREE,
   CONSTRAINT `item_images_ibfk_1` FOREIGN KEY (`item_id`) REFERENCES `items` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT
 ) ENGINE = InnoDB AUTO_INCREMENT = 3 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci ROW_FORMAT = Dynamic;
-
--- ----------------------------
--- Records of item_images
--- ----------------------------
-INSERT INTO `item_images` VALUES (1, 22, 'http://localhost:3000/uploads/1773134458283-test卫衣.webp', 1, '2026-03-10 17:21:55');
-INSERT INTO `item_images` VALUES (2, 23, 'http://localhost:3000/uploads/items/1773621106066-Test黑色长筒裤.jpg', 1, '2026-03-16 08:32:20');
 
 -- ----------------------------
 -- Table structure for items
@@ -117,6 +174,7 @@ CREATE TABLE `items`  (
   `created_at` datetime NULL DEFAULT CURRENT_TIMESTAMP,
   `is_deleted` tinyint NULL DEFAULT 0 COMMENT '是否删除',
   `deleted_at` datetime NULL DEFAULT NULL,
+  `audit_status` tinyint NULL DEFAULT 0,
   PRIMARY KEY (`id`) USING BTREE,
   INDEX `user_id`(`user_id` ASC) USING BTREE,
   INDEX `fk_items_category`(`category_id` ASC) USING BTREE,
@@ -124,26 +182,7 @@ CREATE TABLE `items`  (
   CONSTRAINT `fk_items_category` FOREIGN KEY (`category_id`) REFERENCES `categories` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT,
   CONSTRAINT `fk_items_sub_category` FOREIGN KEY (`sub_category_id`) REFERENCES `sub_categories` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT,
   CONSTRAINT `items_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT
-) ENGINE = InnoDB AUTO_INCREMENT = 24 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci ROW_FORMAT = Dynamic;
-
--- ----------------------------
--- Records of items
--- ----------------------------
-INSERT INTO `items` VALUES (1, 1, '索尼耳机xm5', '黑色的索尼XM5耳机丢在了西教学楼', NULL, 1, 5, NULL, NULL, 'lost', 'unclaimed', '2026-03-04 17:51:10', 1, '2026-03-10 20:25:19');
-INSERT INTO `items` VALUES (7, 1, '黑色蓝牙耳机一副', 'Test', NULL, 1, 5, 'test', '电话:15377654991', 'found', 'unclaimed', '2026-03-04 23:16:30', 0, NULL);
-INSERT INTO `items` VALUES (8, 2, '白色苹果耳机一副', NULL, NULL, 1, 5, NULL, NULL, 'found', 'unclaimed', '2026-03-04 23:19:54', 0, NULL);
-INSERT INTO `items` VALUES (9, 2, '相机一台', NULL, NULL, 1, 6, NULL, NULL, 'found', 'unclaimed', '2026-03-06 00:22:34', 0, NULL);
-INSERT INTO `items` VALUES (10, 1, '校园卡', NULL, NULL, NULL, NULL, NULL, NULL, 'lost', 'unclaimed', '2026-03-06 14:33:39', 0, NULL);
-INSERT INTO `items` VALUES (11, 1, '白色水杯', NULL, NULL, NULL, NULL, NULL, NULL, 'lost', 'unclaimed', '2026-03-06 14:39:43', 0, NULL);
-INSERT INTO `items` VALUES (15, 1, '鞋子', 'shoe', NULL, 2, 3, '图书馆', '123456778910', 'lost', 'unclaimed', '2026-03-06 15:04:28', 0, NULL);
-INSERT INTO `items` VALUES (16, 2, 'iPhone17手机', '一部白色的iPhone17手机遗失在了食堂3楼的桌子上，现在已经放到保安室了', NULL, 1, 1, '食堂3楼', '13455706833', 'found', 'unclaimed', '2026-03-07 01:09:44', 0, NULL);
-INSERT INTO `items` VALUES (17, 1, '华为手机', '本人丢失一部白色华为pura80', NULL, 1, 1, '疑似在东教学楼丢失', '13131313131', 'lost', 'unclaimed', '2026-03-09 23:09:38', 0, NULL);
-INSERT INTO `items` VALUES (18, 1, '12', '1', NULL, 1, 1, '1', '1', 'found', 'unclaimed', '2026-03-09 23:21:46', 0, NULL);
-INSERT INTO `items` VALUES (19, 1, 'test', 'test', NULL, 1, 2, 'test', 'test', 'found', 'unclaimed', '2026-03-10 13:22:44', 1, '2026-03-10 20:29:45');
-INSERT INTO `items` VALUES (20, 1, 'test', 'test', NULL, 2, 4, 'test', 'test', 'found', 'unclaimed', '2026-03-10 13:26:16', 1, '2026-03-10 20:21:41');
-INSERT INTO `items` VALUES (21, 1, '联想笔记本电脑', '一台黑色的联想笔记本电脑', NULL, 1, 2, '5号宿舍楼楼下的蜜雪冰城奶茶店', '电话:13778965431', 'found', 'unclaimed', '2026-03-10 17:04:35', 0, NULL);
-INSERT INTO `items` VALUES (22, 1, '红色卫衣', '在图书馆3楼捡到一件红色的m码卫衣，请失主看见和我联系', 'http://localhost:3000/uploads/items/1773331205084-test卫衣.webp', 2, 3, '图书馆3楼', '电话: 1835460789', 'found', 'unclaimed', '2026-03-10 17:21:55', 0, NULL);
-INSERT INTO `items` VALUES (23, 1, '黑色长筒裤', '一件L码的黑色长筒裤', 'http://localhost:3000/uploads/items/1773621106066-Test黑色长筒裤.jpg', 2, 4, '7号学生宿舍楼附近', '电话:13456789012', 'lost', 'unclaimed', '2026-03-16 08:32:20', 0, NULL);
+) ENGINE = InnoDB AUTO_INCREMENT = 27 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Table structure for sub_categories
@@ -156,18 +195,7 @@ CREATE TABLE `sub_categories`  (
   PRIMARY KEY (`id`) USING BTREE,
   INDEX `category_id`(`category_id` ASC) USING BTREE,
   CONSTRAINT `sub_categories_ibfk_1` FOREIGN KEY (`category_id`) REFERENCES `categories` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT
-) ENGINE = InnoDB AUTO_INCREMENT = 8 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci ROW_FORMAT = Dynamic;
-
--- ----------------------------
--- Records of sub_categories
--- ----------------------------
-INSERT INTO `sub_categories` VALUES (1, '手机', 1);
-INSERT INTO `sub_categories` VALUES (2, '电脑', 1);
-INSERT INTO `sub_categories` VALUES (3, '上衣', 2);
-INSERT INTO `sub_categories` VALUES (4, '裤子', 2);
-INSERT INTO `sub_categories` VALUES (5, '耳机', 1);
-INSERT INTO `sub_categories` VALUES (6, '相机', 1);
-INSERT INTO `sub_categories` VALUES (7, '鞋子', 2);
+) ENGINE = InnoDB AUTO_INCREMENT = 17 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Table structure for users
@@ -190,13 +218,7 @@ CREATE TABLE `users`  (
   `update_time` datetime NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
   PRIMARY KEY (`id`) USING BTREE,
   UNIQUE INDEX `student_id`(`student_id` ASC) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 3 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci ROW_FORMAT = Dynamic;
-
--- ----------------------------
--- Records of users
--- ----------------------------
-INSERT INTO `users` VALUES (1, '20260303', 'TestUser', '$2b$10$k9Iju2icOWdYN3KiXKplKe8LgxX/7.5ge/sbrOuBa0NHrbbzMTwEG', '13567891011', '123456@gmail.com', 'http://localhost:3000/uploads/avatars/1773298767730-avatar.jpg', NULL, 'TestMajor', 'TestGrade', 'student', 1, '2026-03-03 22:42:24', '2026-03-16 20:12:24');
-INSERT INTO `users` VALUES (2, '20260304', 'shiroha', '$2b$10$kguf736II3Vq60SFf1OuM.XJ/Ckg9DBd072D.b0FmemU6K0mepc7y', NULL, NULL, '/default-avatar.png', NULL, NULL, NULL, 'student', 1, '2026-03-04 23:18:07', '2026-03-04 23:18:07');
+) ENGINE = InnoDB AUTO_INCREMENT = 5 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- View structure for chat_message_full_view
@@ -208,6 +230,18 @@ CREATE ALGORITHM = UNDEFINED SQL SECURITY DEFINER VIEW `chat_message_full_view` 
 -- View structure for chat_session_view
 -- ----------------------------
 DROP VIEW IF EXISTS `chat_session_view`;
-CREATE ALGORITHM = UNDEFINED SQL SECURITY DEFINER VIEW `chat_session_view` AS select `cs`.`id` AS `session_id`,`cs`.`user1_id` AS `user1_id`,`cs`.`user2_id` AS `user2_id`,`i`.`id` AS `item_id`,`i`.`title` AS `item_title`,`i`.`picture` AS `item_picture`,`u1`.`username` AS `user1_name`,`u1`.`avatar` AS `user1_avatar`,`u2`.`username` AS `user2_name`,`u2`.`avatar` AS `user2_avatar`,(select `chat_messages`.`content` from `chat_messages` where (`chat_messages`.`session_id` = `cs`.`id`) order by `chat_messages`.`created_at` desc limit 1) AS `last_message`,(select `chat_messages`.`created_at` from `chat_messages` where (`chat_messages`.`session_id` = `cs`.`id`) order by `chat_messages`.`created_at` desc limit 1) AS `last_time` from (((`chat_sessions` `cs` left join `items` `i` on((`cs`.`item_id` = `i`.`id`))) left join `users` `u1` on((`cs`.`user1_id` = `u1`.`id`))) left join `users` `u2` on((`cs`.`user2_id` = `u2`.`id`)));
+CREATE ALGORITHM = UNDEFINED SQL SECURITY DEFINER VIEW `chat_session_view` AS select `s`.`id` AS `session_id`,`s`.`user1_id` AS `user1_id`,`s`.`user2_id` AS `user2_id`,`s`.`deleted_by_user1` AS `deleted_by_user1`,`s`.`deleted_by_user2` AS `deleted_by_user2`,`i`.`id` AS `item_id`,`i`.`title` AS `item_title`,`i`.`picture` AS `item_picture`,`u1`.`username` AS `user1_name`,`u1`.`avatar` AS `user1_avatar`,`u2`.`username` AS `user2_name`,`u2`.`avatar` AS `user2_avatar`,`m`.`content` AS `last_message`,`m`.`created_at` AS `last_time` from ((((`chat_sessions` `s` left join `items` `i` on((`s`.`item_id` = `i`.`id`))) left join `users` `u1` on((`s`.`user1_id` = `u1`.`id`))) left join `users` `u2` on((`s`.`user2_id` = `u2`.`id`))) left join `chat_messages` `m` on((`m`.`id` = (select `chat_messages`.`id` from `chat_messages` where (`chat_messages`.`session_id` = `s`.`id`) order by `chat_messages`.`created_at` desc limit 1))));
+
+-- ----------------------------
+-- View structure for v_activities_user
+-- ----------------------------
+DROP VIEW IF EXISTS `v_activities_user`;
+CREATE ALGORITHM = UNDEFINED SQL SECURITY DEFINER VIEW `v_activities_user` AS select `a`.`id` AS `id`,`a`.`user_id` AS `user_id`,`a`.`action_type` AS `action_type`,`a`.`target_id` AS `target_id`,`a`.`target_type` AS `target_type`,`a`.`content` AS `content`,`a`.`created_at` AS `created_at`,`u`.`username` AS `username`,`u`.`avatar` AS `avatar` from (`activities` `a` left join `users` `u` on((`a`.`user_id` = `u`.`id`)));
+
+-- ----------------------------
+-- View structure for v_items_user
+-- ----------------------------
+DROP VIEW IF EXISTS `v_items_user`;
+CREATE ALGORITHM = UNDEFINED SQL SECURITY DEFINER VIEW `v_items_user` AS select `i`.`id` AS `id`,`i`.`user_id` AS `user_id`,`i`.`title` AS `title`,`i`.`description` AS `description`,`i`.`picture` AS `picture`,`i`.`category_id` AS `category_id`,`i`.`sub_category_id` AS `sub_category_id`,`i`.`location` AS `location`,`i`.`contact` AS `contact`,`i`.`type` AS `type`,`i`.`status` AS `status`,`i`.`created_at` AS `created_at`,`i`.`is_deleted` AS `is_deleted`,`i`.`deleted_at` AS `deleted_at`,`i`.`audit_status` AS `audit_status`,`u`.`username` AS `username`,`c`.`name` AS `category` from ((`items` `i` left join `users` `u` on((`i`.`user_id` = `u`.`id`))) left join `categories` `c` on((`i`.`category_id` = `c`.`id`)));
 
 SET FOREIGN_KEY_CHECKS = 1;
