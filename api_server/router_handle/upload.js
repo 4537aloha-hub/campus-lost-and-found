@@ -46,7 +46,7 @@ export const uploadImage = [
   itemUpload.single('file'),
   (req,res)=>{
 
-    const url = `http://localhost:3000/uploads/items/${req.file.filename}`
+    const url = `${req.protocol}://${req.get('host')}/uploads/items/${req.file.filename}`
 
     res.send({
       status:0,
@@ -62,7 +62,7 @@ export const uploadAvatar = [
   avatarUpload.single('file'),
   (req,res)=>{
 
-    const url = `http://localhost:3000/uploads/avatars/${req.file.filename}`
+    const url = `${req.protocol}://${req.get('host')}/uploads/avatars/${req.file.filename}`
 
     res.send({
       status:0,
@@ -78,7 +78,7 @@ export const uploadBannerImage = [
   bannerUpload.single('file'),
   (req,res)=>{
 
-    const url = `http://localhost:3000/uploads/banners/${req.file.filename}`
+    const url = `${req.protocol}://${req.get('host')}/uploads/banners/${req.file.filename}`
 
     res.send({
       status:0,
