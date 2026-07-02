@@ -14,7 +14,7 @@ const dialogVisible = ref(false)
 // 用于存储本地上传的图片文件
 const imageFile = ref(null)
 
-const uploadBannerImageUrl = 'http://localhost:3000/upload/banner'
+const uploadBannerImageUrl = import.meta.env.VITE_API_BASE_URL + '/upload/banner'
 
 const defaultForm = {
   id: null,

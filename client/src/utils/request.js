@@ -3,7 +3,7 @@ import { useUserStore} from "@/stores/modules/userstore";
 import { useAdminStore } from "@/stores/modules/adminstore";
 
 const request = axios.create({
-  baseURL:'https://vps.naruseshiroha.top:3000',
+  baseURL:import.meta.env.VITE_API_BASE_URL,
   timeout:5000,
 })
 // 请求拦截器

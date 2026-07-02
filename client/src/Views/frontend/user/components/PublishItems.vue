@@ -33,7 +33,7 @@ const emit = defineEmits(['success'])
 const categoryValue = ref()
 
 // 图片上传
-const uploadUrl = 'http://localhost:3000/upload'
+const uploadUrl = import.meta.env.VITE_API_BASE_URL + '/upload'
 
 // 本地图片回显
 const previewImg = ref('')
