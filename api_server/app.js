@@ -12,8 +12,6 @@ import config from './config.js';
 import fs from 'fs';
 // 导入https模块
 import https from 'https';
-// 导入path模块
-import path from 'path';
 
 // 全局注册中间件
 const app = express()
@@ -39,22 +37,6 @@ app.use((req, res, next) => {
 
 // 配置JWT验证中间件 用于解析请求头中的token
 app.use(expressjwt({ secret: config.jwtSecretKey, algorithms: ['HS256'] }).unless({ path: [/^\/api\//, /^\/item\//, /^\/category\//, /^\/subCategory\//, /^\/uploads\//, /^\/notice\//, /^\/banner\//] }))
-
-// 前端静态资源
-app.use(express.static(path.resolve('dist')))
-app.get('*', (req, res) => {
-  res.sendFile(path.resolve('dist/index.html'))
-});
-
-// 错误级别中间件
-app.use(function (err, req, res, next) { 
-    // 数据验证失败
-    if (err instanceof joi.ValidationError) return res.cc(err)
-    // 捕获身份认证失败的错误
-    if (err.name === 'UnauthorizedError') return res.cc('身份认证失败！')
-    // 未知错误
-    res.cc(err)
-});
 
 // 导入用户端路由模块
 import userRouter from './router/user.js'
@@ -128,6 +110,16 @@ app.use('/admin/banner', adminBannerRouter)
 // app.listen(3000, () => {
 //   console.log('服务器已启动,请访问：http://localhost:3000');
 // })
+
+// 错误级别中间件
+app.use(function (err, req, res, next) { 
+    // 数据验证失败
+    if (err instanceof joi.ValidationError) return res.cc(err)
+    // 捕获身份认证失败的错误
+    if (err.name === 'UnauthorizedError') return res.cc('身份认证失败！')
+    // 未知错误
+    res.cc(err)
+});
 
 const options = {
     key: fs.readFileSync("/etc/letsencrypt/live/naruseshiroha.top/privkey.pem"),
