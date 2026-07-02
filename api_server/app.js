@@ -12,6 +12,8 @@ import config from './config.js';
 import fs from 'fs';
 // 导入https模块
 import https from 'https';
+// 导入path模块 用于处理文件路径
+import path from 'path';
 
 // 全局注册中间件
 const app = express()
