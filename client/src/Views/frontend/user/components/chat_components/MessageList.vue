@@ -1,6 +1,7 @@
 <script setup>
 // 导入所需要的组合式API
 import { defineProps, onMounted, watch, ref, nextTick } from 'vue'
+import defaultAvatar from '@/assets/imgs/avatar.jpg'
 
 // 接收来自父组件ChatWindow.vue传递过来的message列表值
 const props = defineProps({
@@ -56,7 +57,7 @@ onMounted(() => {
 
           <!-- 对方 -->
           <template v-if="!msg.isMine">
-            <img class="avatar" :src="msg.avatar" />
+            <img class="avatar" :src="msg.avatar === '/default-avatar.png' ? defaultAvatar : msg.avatar" />
 
             <div class="msg-content">
               <div class="username">{{ msg.username }}  </div>
@@ -78,7 +79,7 @@ onMounted(() => {
               </div>
             </div>
 
-            <img class="avatar" :src="msg.avatar" />
+            <img class="avatar" :src="msg.avatar === '/default-avatar.png' ? defaultAvatar : msg.avatar" />
           </template>
 
         </div>

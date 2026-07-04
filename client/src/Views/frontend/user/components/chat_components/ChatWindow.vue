@@ -14,7 +14,7 @@ import { getSocket } from '@/utils/socket'
 import { applyClaim } from '@/api/user'
 // 引入element-plus的message组件
 import { ElMessage, ElMessageBox } from 'element-plus'
-
+import defaultItem from '@/assets/imgs/noItemImg.jpg'
 
 
 const userStore = useUserStore()
@@ -58,8 +58,6 @@ const handleClaim = async () => {
     ElMessage.error(res.message)
   }
 }
-
-
 
 // watch监听currentSession的变化，当currentSession值发生变化时，执行回调函数
 watch(() => props.currentSession, async (newSession) => {
@@ -126,7 +124,7 @@ onUnmounted(() => {
         <!-- 聊天窗口头部展示物品的信息 -->
         <template v-if="currentSession">
           <div class="chat-item-info">
-            <img :src="currentSession.item_picture" alt="">
+            <img :src="currentSession.item_picture || defaultItem" alt="" />
             <div class="item-title">
               {{ currentSession.item_title }}
             </div>
