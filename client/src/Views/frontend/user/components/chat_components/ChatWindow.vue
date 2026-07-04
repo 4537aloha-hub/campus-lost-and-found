@@ -90,12 +90,30 @@ let handler = null
 // Websocket服务器推送
 const webSocketMessagePush = () => {
   const ws = getSocket()
-
+  if (!ws) {
+    console.warn('websocket 未连接，无法绑定消息监听')
+    return
+  }
   handler = (event) => {
-    const data = JSON.parse(event.data)
+    try {
+      const data = JSON.parse(event.data)
+
+      // 如果是聊天消息并且属于当前会话，则加入到消息列表
+      const sessionId = props.currentSession?.session_id
+      const incomingSessionId = data.session_id || data.sessionId || data.session || null
+
+      if (incomingSessionId && sessionId && incomingSessionId === sessionId) {
+        messages.value.push({
+          ...data,
+          isMine: data.sender_id === currentUserId || data.senderId === currentUserId,
+        })
+      }
+    } catch (e) {
+      console.error('处理 websocket 消息出错', e)
+    }
   }
   // 监听服务器推送的消息
-  ws.addEventListener('message', handler)
+  if (ws.addEventListener) ws.addEventListener('message', handler)
 }
 
 // 移除监听 当离开一个聊天窗口时候 销毁离开聊天窗口的监听
@@ -103,7 +121,8 @@ const webSocketMessagePush = () => {
 const removeWebSocketListener = () => {
   const ws = getSocket()
   // 移除监听服务器推送的消息
-  ws.removeEventListener('message', handler)
+  if (!ws) return
+  if (ws.removeEventListener) ws.removeEventListener('message', handler)
 }
 
 // 生命周期 页面加载时监听
