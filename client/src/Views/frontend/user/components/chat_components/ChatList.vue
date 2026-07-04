@@ -6,6 +6,7 @@ import { getSessionList, deleteSession } from '@/api/chat'
 import { useUserStore } from '@/stores/modules/userstore';
 // 导入路由
 import { useRoute, useRouter } from 'vue-router'
+import defaultAvatar from '@/assets/imgs/avatar.jpg'
 // 使用路由
 const router = useRouter()
 const route = useRoute()
@@ -123,6 +124,21 @@ const fetcheSessionList = async () => {
   }
 }
 
+// 判断用户头像功能函数
+const getAvatar = (item) => {
+  let avatar
+
+  if (item.user1_id === currentUserId) {
+    avatar = item.user2_avatar
+  } else {
+    avatar = item.user1_avatar
+  }
+
+  return avatar && avatar !== '/default-avatar.png'
+    ? avatar
+    : defaultAvatar
+}
+
 // 记录右键位置
 const contextMenu = ref({
   visible: false,
@@ -161,7 +177,7 @@ onMounted(async() => {
         >
           <div class="chat-item" :class="{ active: selectedSessionId === item.session_id}">
             <div class="avatar">
-              <img :src="item.user1_id === currentUserId ? item.user2_avatar : item.user1_avatar" alt="">
+              <img :src="getAvatar(item)" alt="">
             </div>
             <div class="info">
               <div class="user_name">{{ item.user1_id === currentUserId ? item.user2_name : item.user1_name }}</div>
