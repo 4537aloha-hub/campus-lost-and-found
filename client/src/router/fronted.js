@@ -236,46 +236,80 @@ const router = createRouter({
 })
 
 // 路由守卫
-router.beforeEach((to, from, next) => {
+import { useUserStore } from '@/stores/modules/userstore'
+
+let isFetchingUser = false
+
+router.beforeEach(async (to, from, next) => {
   const userStore = useUserStore()
-  const isLoggedIn = !!userStore.token
+
+  const token = userStore.token
   const userInfo = userStore.userInfo
 
-  // 如果用户已登录
-  if (isLoggedIn && userInfo) {
-    // 如果是管理员，访问非/admin路径时跳转到后台首页
-    if (userInfo.role === 'admin' && !to.path.startsWith('/admin')) {
-      next('/admin/dashboard')
-      return
-    }
-    // 如果是普通用户，访问/admin路径时跳转到用户首页
-    if (userInfo.role !== 'admin' && to.path.startsWith('/admin')) {
-      next('/home')
-      return
-    }
-    next()
-  } else if (isLoggedIn && !userInfo) {
-    // 有token但没有userInfo，尝试获取用户信息
-    userStore.FetUserInfo().then(() => {
-      const info = userStore.userInfo
-      if (info.role === 'admin') {
-        next(to.path.startsWith('/admin') ? to.path : '/admin/dashboard')
-      } else {
-        next(to.path.startsWith('/admin') ? '/home' : to.path)
-      }
-    }).catch(() => {
-      // 获取用户信息失败，跳转到登录
-      next('/login')
-    })
-  } else {
-    // 未登录状态
-    // 如果访问需要认证的路由，跳转到登录
+  // 未登录
+  if (!token) {
     if (to.meta.requiresAuth) {
       next('/login')
       return
     }
     next()
+    return
   }
+
+  // 已登录 + 已有 userInfo
+  if (token && userInfo) {
+    const role = userInfo.role
+
+    // 管理员权限
+    if (role === 'admin' && !to.path.startsWith('/admin')) {
+      next('/admin/dashboard')
+      return
+    }
+
+    // 普通用户访问 admin
+    if (role !== 'admin' && to.path.startsWith('/admin')) {
+      next('/home')
+      return
+    }
+
+    next()
+    return
+  }
+
+  // 已登录但没有 userInfo（只允许请求一次）
+  if (token && !userInfo) {
+    if (isFetchingUser) {
+      next() // 防止重复卡死
+      return
+    }
+
+    isFetchingUser = true
+
+    try {
+      await userStore.FetUserInfo()
+
+      const role = userStore.userInfo?.role
+
+      if (role === 'admin') {
+        next(to.path.startsWith('/admin') ? to.path : '/admin/dashboard')
+      } else {
+        next(to.path.startsWith('/admin') ? '/home' : to.path)
+      }
+    } catch (err) {
+      // token失效直接清理
+      userStore.token = ''
+      userStore.userInfo = null
+      localStorage.removeItem('token')
+
+      next('/login')
+    } finally {
+      isFetchingUser = false
+    }
+
+    return
+  }
+
+  next()
 })
 
 export default router
