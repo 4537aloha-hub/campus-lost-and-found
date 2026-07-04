@@ -236,8 +236,6 @@ const router = createRouter({
 })
 
 // 路由守卫
-import { useUserStore } from '@/stores/modules/userstore'
-
 let isFetchingUser = false
 
 router.beforeEach(async (to, from, next) => {
