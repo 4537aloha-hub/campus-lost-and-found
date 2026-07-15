@@ -101,11 +101,17 @@ const webSocketMessagePush = () => {
 
   handler = (event)=>{
 
+    console.log('收到WebSocket消息');
+    console.log(event.data);
+
     const data = JSON.parse(event.data)
 
 
     // 判断是不是聊天消息
     if(data.type === 'new_message'){
+
+          console.log("当前session:", props.currentSession?.session_id);
+          console.log("收到session:", data.session_id);
 
 
       // 判断是不是当前聊天窗口
@@ -114,6 +120,8 @@ const webSocketMessagePush = () => {
         data.session_id === props.currentSession.session_id
       ){
 
+        console.log("开始更新消息列表");
+        
         messages.value.push({
 
           sender_id:data.sender_id,
