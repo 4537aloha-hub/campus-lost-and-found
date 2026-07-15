@@ -2,13 +2,17 @@
 // 导入发送消息的接口
 import { sendMessage } from '@/api/chat'
 import { ref, defineProps, defineEmits, computed } from 'vue'
+import { useUserStore } from '@/stores/modules/userstore'
+import { getSocket } from '@/utils/socket'
+
+const userStore = useUserStore()
 
 // 获取父组件传递的session_id
 const props = defineProps({
   sessionId: {
     type: Number,
     default: null
-  }
+  },
 })
 
 // 定义emit事件(子组件通知父组件：我这边已经发送了消息你那边该更新消息列表了)

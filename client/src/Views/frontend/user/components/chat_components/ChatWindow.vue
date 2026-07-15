@@ -15,7 +15,8 @@ import { applyClaim } from '@/api/user'
 // 引入element-plus的message组件
 import { ElMessage, ElMessageBox } from 'element-plus'
 import defaultItem from '@/assets/imgs/noItemImg.jpg'
-
+// 引入 等待WebSocket连接建立
+import { waitSocket } from '@/utils/socket'
 
 const userStore = useUserStore()
 // 获取当前登录的用户id
@@ -34,14 +35,14 @@ const props = defineProps({
 })
 
 // 接收来自子组件emit提交过来的消息
-const handleSendSuccess = (content) => {
-  messages.value.push({
-    sender_id: currentUserId,
-    content: content,
-    avatar: userStore.userInfo.avatar,
-    isMine: true,
-  })
-}
+// const handleSendSuccess = (content) => {
+//   messages.value.push({
+//     sender_id: currentUserId,
+//     content: content,
+//     avatar: userStore.userInfo.avatar,
+//     isMine: true,
+//   })
+// }
 
 // 认领物品
 const handleClaim = async () => {
@@ -89,31 +90,55 @@ watch(() => props.currentSession, async (newSession) => {
 let handler = null
 // Websocket服务器推送
 const webSocketMessagePush = () => {
+
   const ws = getSocket()
-  if (!ws) {
-    console.warn('websocket 未连接，无法绑定消息监听')
+
+  if(!ws){
+    console.log('WebSocket未连接')
     return
   }
-  handler = (event) => {
-    try {
-      const data = JSON.parse(event.data)
 
-      // 如果是聊天消息并且属于当前会话，则加入到消息列表
-      const sessionId = props.currentSession?.session_id
-      const incomingSessionId = data.session_id || data.sessionId || data.session || null
 
-      if (incomingSessionId && sessionId && incomingSessionId === sessionId) {
+  handler = (event)=>{
+
+    const data = JSON.parse(event.data)
+
+
+    // 判断是不是聊天消息
+    if(data.type === 'new_message'){
+
+
+      // 判断是不是当前聊天窗口
+      if(
+        props.currentSession &&
+        data.session_id === props.currentSession.session_id
+      ){
+
         messages.value.push({
-          ...data,
-          isMine: data.sender_id === currentUserId || data.senderId === currentUserId,
+
+          sender_id:data.sender_id,
+
+          content:data.content,
+
+          avatar:data.avatar,
+
+          username:data.username,
+
+          isMine:data.sender_id === currentUserId
+
         })
+
       }
-    } catch (e) {
-      console.error('处理 websocket 消息出错', e)
+
     }
+
   }
-  // 监听服务器推送的消息
-  if (ws.addEventListener) ws.addEventListener('message', handler)
+
+
+  ws.addEventListener(
+    'message',
+    handler
+  )
 }
 
 // 移除监听 当离开一个聊天窗口时候 销毁离开聊天窗口的监听
@@ -121,14 +146,17 @@ const webSocketMessagePush = () => {
 const removeWebSocketListener = () => {
   const ws = getSocket()
   // 移除监听服务器推送的消息
-  if (!ws) return
-  if (ws.removeEventListener) ws.removeEventListener('message', handler)
+  ws.removeEventListener('message', handler)
 }
 
 // 生命周期 页面加载时监听
-onMounted(() => {
+onMounted(async () => {
   // 页面加载时，调用webSocketMessagePush函数 接收消息
-  webSocketMessagePush()
+  const ws = await waitSocket()
+
+  console.log('WebSocket连接已建立，开始监听消息推送', ws);
+
+  webSocketMessagePush(ws)
 })
 
 // 生命周期 离开页面时移除监听
@@ -164,8 +192,8 @@ onUnmounted(() => {
       />
       <!-- 聊天输入框 -->
       <ChatInput
-      @send-success="handleSendSuccess"
-      :session-id="currentSession?.session_id" />
+      :session-id="currentSession?.session_id"
+      />
       </div>
 </template>
 <style scoped lang="scss">

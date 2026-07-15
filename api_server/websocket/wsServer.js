@@ -42,6 +42,7 @@ wss.on('connection', (ws) => {
             console.log('用户上线', data.userId);
         }
     })
+    
     ws.on('close', () => {
 
           // 检查用户是否在在线用户列表中 不在则清理
@@ -54,7 +55,7 @@ wss.on('connection', (ws) => {
     })
 })
 
-export default {
+export {
     wss,
     onlineUsers,
 }
