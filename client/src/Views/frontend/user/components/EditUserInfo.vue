@@ -134,7 +134,15 @@ onMounted(()=> {
     </div>
     <!-- 头像区域 -->
     <div @click="handleEditAvatar" class="avatar">
-      <el-avatar :src="userStore.userInfo?.avatar === '/default-avatar.png' ? defaultAvatar : userStore.userInfo?.avatar" :size="100"></el-avatar>
+      <el-avatar
+        :src="
+          avatarUrl ||
+          (userStore.userInfo?.avatar === '/default-avatar.png'
+            ? defaultAvatar
+            : userStore.userInfo?.avatar)
+        "
+        :size="100"
+      />
     </div>
     <!-- 学号 -->
      <div class="student-id"><span>学号:{{ userInfo.student_id }}</span></div>

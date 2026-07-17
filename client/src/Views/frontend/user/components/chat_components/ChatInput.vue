@@ -52,7 +52,9 @@ const handleSendMessage = async () => {
   const res = await sendMessage({
     session_id: props.sessionId,
     content: messageRef.value.content,
+
   })
+
 
   // 通知父组件，消息发送成功，传消息内容给父组件，父组件需要刷新消息列表
   emit('send-success', messageRef.value.content)
