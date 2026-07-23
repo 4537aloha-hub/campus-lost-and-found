@@ -8,7 +8,7 @@ export const getItemListHandler = async (req, res) => {
 
         // 返回物品列表
             res.send({
-                status: 200,
+                status: 0,
                 message: '获取物品列表成功',
                 data: results
             })
@@ -30,7 +30,7 @@ export const getItemInfoByIdHandler = async(req,res) => {
             return res.cc('物品不存在');
         // 返回物品信息
         res.send({
-            status: 200,
+            status: 0,
             message: '查询成功',
             data: results[0]
         })
