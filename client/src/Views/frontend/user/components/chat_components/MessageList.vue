@@ -192,4 +192,9 @@ onMounted(() => {
   color: #aaa;
   font-size: 14px;
 }
+
+@media (max-width: 480px) {
+  .chat-body { padding: 12px; }
+  .bubble { max-width: 170px; }
+}
 </style>

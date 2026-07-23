@@ -103,4 +103,17 @@ defineExpose({
     }
   }
 }
+
+@media (max-width: 480px) {
+  :deep(.el-dialog) {
+    width: calc(100% - 32px);
+  }
+  .avatar-uploader :deep() {
+    .avatar,
+    .el-upload {
+      width: min(278px, calc(100vw - 80px));
+      height: min(278px, calc(100vw - 80px));
+    }
+  }
+}
 </style>

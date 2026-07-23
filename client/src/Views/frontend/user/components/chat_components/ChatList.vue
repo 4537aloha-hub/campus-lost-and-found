@@ -290,4 +290,16 @@ onMounted(async() => {
   padding: 8px 12px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
+
+@media (max-width: 480px) {
+  .chat-list {
+    width: 96px;
+    flex: 0 0 96px;
+    .chat-item {
+      padding: 12px 8px;
+      justify-content: center;
+      .info { display: none; }
+    }
+  }
+}
 </style>

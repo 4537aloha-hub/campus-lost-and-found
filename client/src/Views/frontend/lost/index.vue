@@ -113,39 +113,39 @@ watch([activeCategoryId, activeSubCategoryId], () => {
 
   <div class="list-container">
 
-  <div v-if="lostItems.length === 0 && hasSearched" class="no-data">
-    暂无该物品信息
+    <div v-if="lostItems.length === 0 && hasSearched" class="no-data">
+      暂无该物品信息
+    </div>
+
+    <div v-else class="list-grid">
+      <SkeletonWrapper :loading="showSkeleton">
+
+        <template #default>
+          <ItemListCard
+            v-for="item in lostItems"
+            :key="item.id"
+            :item="item"
+          />
+        </template>
+
+        <template #skeleton>
+          <SkeletonItemListCard
+            v-for="(item, index) in skeletonList"
+            :key="index"
+          />
+        </template>
+
+      </SkeletonWrapper>
+    </div>
+
+    <div class="pagination-wrapper" v-if="lostItems.length > 0">
+      <Pagination
+      :total="total"
+      :params="params"
+      @page-change="onPageChange"
+      />
+    </div>
   </div>
-
-  <div v-else class="list-grid">
-    <SkeletonWrapper :loading="showSkeleton">
-
-      <template #default>
-        <ItemListCard
-          v-for="item in lostItems"
-          :key="item.id"
-          :item="item"
-        />
-      </template>
-
-      <template #skeleton>
-        <SkeletonItemListCard
-          v-for="(item, index) in skeletonList"
-          :key="index"
-        />
-      </template>
-
-    </SkeletonWrapper>
-  </div>
-
-  <div class="pagination-wrapper" v-if="lostItems.length > 0">
-    <Pagination
-    :total="total"
-    :params="params"
-    @page-change="onPageChange"
-    />
-  </div>
-</div>
 </template>
 
 <style scoped lang="scss">

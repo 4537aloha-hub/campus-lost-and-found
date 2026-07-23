@@ -124,5 +124,18 @@ button {
   cursor: pointer;
 }
 }
-</style>
 
+@media (max-width: 480px) {
+  .chat-input {
+    .editor {
+      min-height: 100px;
+      padding-bottom: 52px;
+    }
+    button {
+      right: 12px;
+      bottom: 8px;
+      width: 64px;
+    }
+  }
+}
+</style>

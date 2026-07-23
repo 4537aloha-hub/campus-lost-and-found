@@ -46,17 +46,19 @@ const props = defineProps({
 
 // 认领物品
 const handleClaim = async () => {
-  await ElMessageBox.confirm('经过双方确认，是否要申请认领物品吗？', '认领物品', {
-    confirmButtonText: '确定',
-    cancelButtonText: '取消',
-    type: 'warning',
-  })
-  const res = await applyClaim(props.currentSession.item_id)
-  console.log(res);
-  if(res.status === 0) {
+  try {
+    await ElMessageBox.confirm('经过双方确认，是否要申请认领物品吗？', '认领物品', {
+      confirmButtonText: '确定',
+      cancelButtonText: '取消',
+      type: 'warning',
+    })
+
+    const res = await applyClaim(props.currentSession.item_id)
     ElMessage.success('认领物品成功')
-  } else {
-    ElMessage.error(res.message)
+  } catch (error) {
+    if (error instanceof Error) {
+      ElMessage.error(error.message || '认领失败')
+    }
   }
 }
 
@@ -121,7 +123,7 @@ const webSocketMessagePush = () => {
       ){
 
         console.log("开始更新消息列表");
-        
+
         messages.value.push({
 
           sender_id:data.sender_id,

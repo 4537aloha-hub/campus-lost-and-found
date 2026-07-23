@@ -18,7 +18,9 @@ defineProps({
       </div>
     </template>
     <!-- 存放内容区域 -->
-    <slot name="table"></slot>
+    <div class="table-content">
+      <slot name="table"></slot>
+    </div>
   </el-card>
 </template>
 <style scoped lang="scss">
@@ -31,6 +33,26 @@ defineProps({
       justify-content: space-between;
       align-items: center;
     }
+    .table-content {
+      width: 100%;
+      overflow-x: auto;
+    }
+}
+
+@media (max-width: 480px) {
+  .page-container {
+    :deep(.el-card__header),
+    :deep(.el-card__body) {
+      padding: 12px;
+    }
+    .header {
+      gap: 12px;
+      font-size: 14px;
+    }
+    .table-content {
+      -webkit-overflow-scrolling: touch;
+    }
+  }
 }
 
 </style>

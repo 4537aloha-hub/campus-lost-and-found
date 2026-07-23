@@ -258,6 +258,7 @@ onMounted(() => {
       </el-table>
     </div>
 
+    <!-- 分页组件 -->
     <div class="pagination-container">
       <el-pagination
         @size-change="handleSizeChange"
@@ -331,12 +332,31 @@ onMounted(() => {
 }
 
 .pagination-container {
-  display: flex;
-  justify-content: center;
-  margin-top: 20px;
-  padding: 16px;
-  background: #fff;
-  border-radius: 10px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
-}
+    display: flex;
+    justify-content: center;
+    margin-top: 20px;
+    padding: 16px;
+    background: #fff;
+    border-radius: 10px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+    overflow-x: auto;
+  }
+
+  .pagination-container .el-pagination {
+    min-width: 320px;
+    max-width: 100%;
+    width: auto;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  @media screen and (max-width: 480px) {
+    .pagination-container {
+      padding: 12px 4px;
+    }
+
+    .pagination-container .el-pagination {
+      min-width: 400px;
+    }
+  }
 </style>

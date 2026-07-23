@@ -84,4 +84,13 @@ const handleDeleteSession = (session_id) => {
   align-items: center;
   justify-content: center;
 }
+
+@media (max-width: 480px) {
+  .chat-container {
+    min-height: calc(100vh - 210px);
+    .chat-body {
+      position: relative;
+    }
+  }
+}
 </style>

@@ -68,8 +68,11 @@ const searchItemName = async () => {
 
 <style scoped lang="scss">
 .search {
-  width: 1240px;
+  width: 100%;
+  max-width: 1240px;
+  padding: 0 16px;
   margin: 20px auto;
+  box-sizing: border-box;
 
   input {
     width: 170px;

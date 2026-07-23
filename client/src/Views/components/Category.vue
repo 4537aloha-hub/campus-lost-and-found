@@ -76,8 +76,11 @@ const selectSubCategoty = (sub) => {
 </template>
 <style lang="scss" scoped>
 .container {
-  width: 1240px;
+  width: 100%;
+  max-width: 1240px;
+  padding: 0 16px;
   margin: 0 auto;
+  box-sizing: border-box;
   // 一级标题样式
   .category {
   display: flex;
