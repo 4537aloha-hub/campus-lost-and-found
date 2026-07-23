@@ -7,8 +7,14 @@ const userStore = useUserStore()
 
 const { FetUserInfo } = userStore
 
-onMounted(() => {
-  FetUserInfo()
+onMounted(async () => {
+  if (userStore.token && !userStore.userInfo) {
+    try {
+      await FetUserInfo()
+    } catch (err) {
+      console.error('LayoutNav 获取用户信息失败:', err.message || err)
+    }
+  }
 })
 </script>
 

@@ -11,6 +11,9 @@ export const useUserStore = defineStore("user", () => {
   // 获取用户信息
   const FetUserInfo = async () => {
     const res = await getUserInfo();
+    if (!res || res.status !== 0 || !res.data) {
+      throw new Error(res?.message || '获取用户信息失败')
+    }
     console.log('用户信息获取成功', res);
     userInfo.value = res.data
   }
