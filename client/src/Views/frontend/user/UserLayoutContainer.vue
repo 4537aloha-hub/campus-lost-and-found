@@ -205,7 +205,7 @@ onBeforeUnmount(() => {
   padding: 20px 0;
   margin: 0 auto;
   min-height: calc(100vh - 60px);
-  height: auto;
+  height: calc(100vh - 60px);
   display: flex;
 }
 .user-route-content {
